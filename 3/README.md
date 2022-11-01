@@ -1,13 +1,8 @@
-#### Docs
-
 ##### Dockerfiles
 
-dockerfiles are stored in dockerfiles/
+Dockerfiles used to build open5gs, open5gs-webui and ueransim are stored in [dockerfiles](./dockerfiles)
 
-
-There are stored dockerfiles to build open5gs, open5gs-webui and ueransim
-
-all of them are build and pushed to docker-hub registry piotmni/
+All of them are build and pushed to docker-hub registry piotmni/
 
 ##### Charts
 
@@ -19,9 +14,9 @@ List of charts:
 - ueransim
 ```
 
-open5gs-component-base is chart created to use as wrapper to start all required NFs
+open5gs-component-base is chart created to use as wrapper to start all required NFs.
 
-It is used as a dependency with specified aliases in open5gs-5gcore
+open5gs-5gcore is chart that mainly has a dependecies to start NFs and mongodb. Also allows to start debugging container.
 
 Components:
 ```
@@ -39,4 +34,4 @@ Components:
 
 ueransim chart is only for testing purposes
 
-How to run this is stored in [docs/README.md](./docs/README.md)
+Example with steps how to run this is stored in [docs/README.md](./docs/README.md)
