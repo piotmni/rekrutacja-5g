@@ -1,0 +1,43 @@
+FROM ubuntu:focal AS builder
+
+#basic dep
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update && \
+    apt-get upgrade && \
+    apt-get install -y make \
+        gcc \
+        g++ \
+        libsctp-dev \
+        lksctp-tools \
+        git \
+        wget \
+        iproute2 \
+        libssl-dev
+
+# install cmake
+RUN wget https://cmake.org/files/v3.24/cmake-3.24.2.tar.gz && \
+    tar xvfz cmake-3.24.2.tar.gz && \
+    cd cmake-3.24.2 && \
+    ./bootstrap && \
+    make -j`nproc` && \
+    make install
+
+# buiild UERANSIM
+RUN git clone https://github.com/aligungr/UERANSIM && \
+    cd UERANSIM &&  \
+    make -j`nproc`
+
+FROM ubuntu:focal AS prod
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libsctp-dev \
+        lksctp-tools \
+        iproute2
+
+COPY --from=builder /UERANSIM/build /UERANSIM/build
+COPY --from=builder /UERANSIM/config /UERANSIM/config
+
+
+WORKDIR UERANSIM/build

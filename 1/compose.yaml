@@ -1,0 +1,4 @@
+services:
+  rekrutacja-app:
+    image: piotmni/rekrutacja5g-jar:0.0.1
+    build: .

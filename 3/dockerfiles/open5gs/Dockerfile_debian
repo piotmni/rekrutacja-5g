@@ -1,0 +1,69 @@
+FROM debian:stable as builder
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3-pip \
+        python3-setuptools \
+        python3-wheel \
+        ninja-build \
+        build-essential \
+        flex \
+        bison \
+        git \
+        libsctp-dev \
+        libgnutls28-dev \
+        libgcrypt-dev \
+        libssl-dev \
+        libidn11-dev \
+        libmongoc-dev \
+        libbson-dev \
+        libyaml-dev \
+        libnghttp2-dev \
+        libmicrohttpd-dev \
+        libcurl4-gnutls-dev \
+        libtins-dev \
+        libtalloc-dev\
+        meson \
+        pkg-config
+
+RUN git clone -b v2.5.4 https://github.com/open5gs/open5gs
+
+# build open5gs
+RUN cd open5gs && \
+    meson build --prefix=`pwd`/install && \
+    ninja -C build && cd build && ninja install && \
+    mkdir -p /open5gs/install/include
+
+FROM debian:stable-slim
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update && apt-get install -y \
+        libsctp-dev \
+        libgnutls28-dev \
+        libgcrypt-dev \
+        libssl-dev \
+        libidn11-dev \
+        libmongoc-dev \
+        libbson-dev \
+        libyaml-dev \
+        ca-certificates \
+        libmicrohttpd-dev \
+        libcurl4-gnutls-dev \
+        libnghttp2-dev \
+        libtins-dev \
+        libidn11-dev \
+        libtalloc-dev \
+        pkg-config \
+        iproute2 iputils-ping procps net-tools iptables
+
+COPY --from=builder /open5gs/install/bin /open5gs/install/bin
+COPY --from=builder /open5gs/install/etc /open5gs/install/etc
+COPY --from=builder /open5gs/install/include /open5gs/install/include
+#COPY --from=builder /open5gs/install/lib /open5gs/install/lib
+COPY --from=builder /open5gs/install/lib /usr/local/lib/
+COPY --from=builder /open5gs/webui /open5gs/webui
+
+RUN ldconfig
+
+WORKDIR open5gs

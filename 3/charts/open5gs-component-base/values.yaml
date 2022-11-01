@@ -1,0 +1,64 @@
+# Default values for open5gs-component-base.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Number of replicas to ran
+replicaCount: 1
+
+# Based on component name there will started specified NF like amf, nssf etc.
+componentName: "base"
+
+# Namespace to run in
+namespace: "open5gs"
+
+# Default image used to run
+image:
+  repository: piotmni/open5gs
+  pullPolicy: IfNotPresent
+  tag: "2.5.4-debian"
+
+# ports used in pod template
+ports:
+  - name: sbi
+    protocol: TCP
+    containerPort: 80
+
+
+# Configuration for probes used like health checks
+livenessProbeEnabled: true
+livenessProbeConfig:
+  tcpSocket:
+    port: sbi
+  initialDelaySeconds: 600
+  periodSeconds: 10
+  timeoutSeconds: 5
+readinessProbeEnabled: true
+readinessProbeConfig:
+  tcpSocket:
+    port: sbi
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  timeoutSeconds: 1
+
+
+# Yaml contante that will be used for creating config map
+config: {}
+
+# Used to limit resources for pod
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+
+# services configuartion
+# it is important that service name have name exactly as port defined in ports
+services:
+  sbi:
+    type: ClusterIP
+
+# security context for pod
+securityContext: {}

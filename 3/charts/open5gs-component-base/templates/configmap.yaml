@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: component-config-{{- include "open5gs-component-base.name" . }}
+  namespace: {{ .Values.namespace | quote }}
+  labels:
+    {{- include "open5gs-component-base.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    {{ tpl (toYaml .Values.config ) . | nindent 4 }}

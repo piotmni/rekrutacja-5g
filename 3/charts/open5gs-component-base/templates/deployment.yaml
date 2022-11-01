@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "open5gs-component-base.name" .}}
+  namespace: {{ .Values.namespace | quote }}
+  labels:
+    {{- include "open5gs-component-base.labels" . | nindent 4 }}
+
+spec:
+  selector:
+    matchLabels:
+      {{- include "open5gs-component-base.selectorLabels" . | nindent 6 }}
+
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        {{- include "open5gs-component-base.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{-  toYaml .Values.initContainers  | nindent 8 }}
+      {{- end }}
+
+      containers:
+        - name: {{ include "open5gs-component-base.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          command:
+            - "/open5gs/install/bin/open5gs-{{ .Values.componentName }}d"
+          args:
+            - "-c"
+            - "/open5gs/configs/config.yaml"
+          ports:
+            {{- toYaml .Values.ports | nindent 12 }}
+
+          {{- if .Values.livenessProbeEnabled }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbeConfig | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.readinessProbeEnabled }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbeConfig | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
+
+          volumeMounts:
+            - name: config
+              mountPath:  /open5gs/configs/
+
+      volumes:
+        - name: config
+          configMap:
+            name: component-config-{{- include "open5gs-component-base.name" . }}

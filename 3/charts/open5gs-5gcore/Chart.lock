@@ -1,0 +1,36 @@
+dependencies:
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: open5gs-component-base
+  repository: file://../open5gs-component-base
+  version: 0.1.0
+- name: mongodb
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.1.31
+digest: sha256:6707e821363d5966e7d0af15ba5046043b403ab622d15dcb471881118da85cb4
+generated: "2022-10-29T20:10:32.986420409+02:00"

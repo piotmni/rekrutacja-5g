@@ -1,0 +1,32 @@
+{{- if .Values.debuggingContainerEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "open5gs-5gcore.name" . }}-debugging-container
+  namespace: {{ .Values.namespace | quote }}
+  labels:
+    {{- include "open5gs-5gcore.labels" . | nindent 4 }}
+    app.kubernetes.io/component: debugging-container
+
+spec:
+  selector:
+    matchLabels:
+      {{ include "open5gs-5gcore.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: debugging-container
+  template:
+    metadata:
+      labels:
+        {{- include "open5gs-5gcore.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: debugging-container
+    spec:
+      containers:
+      - name: debugging-container
+        image: debian:slim
+        env:
+        - name: DB_URI
+          value: mongodb://{{ .Release.Name }}-mongodb/open5gs
+        command:
+        - /bin/bash
+        - -c
+        - "tail -f /dev/null"
+{{- end }}

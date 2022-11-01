@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ueransim.name" .}}-ue
+  namespace: {{ .Values.namespace | quote }}
+  labels:
+    app.kubernetes.io/component: ue
+    {{- include "ueransim.labels" . | nindent 4 }}
+
+spec:
+  selector:
+    matchLabels:
+      {{- include "ueransim.selectorLabels" . | nindent 6 }}
+
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: ue
+        {{- include "ueransim.selectorLabels" . | nindent 8 }}
+    spec:
+
+      containers:
+        - name: {{ include "ueransim.name" . }}-ue
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            privileged: true
+            capabilities:
+              add: [ "NET_ADMIN" ]
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          command:
+            - "./nr-ue"
+          args:
+            - "-c"
+            - "/configs/ue.yaml"
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.gnbResources | nindent 12 }}
+          {{- end }}
+
+          volumeMounts:
+            - name: config
+              mountPath:  /configs/
+
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "ueransim.name" .}}-configmap-ue

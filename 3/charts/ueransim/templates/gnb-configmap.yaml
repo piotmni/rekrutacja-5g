@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name:  {{ include "ueransim.name" .}}-configmap-gnb
+  namespace: {{ .Values.namespace | quote }}
+  labels:
+    app.kubernetes.io/component: gnb
+    {{- include "ueransim.labels" . | nindent 4 }}
+data:
+  gnb.yaml: |
+    {{ toYaml .Values.gnbConfig | nindent 4 }}

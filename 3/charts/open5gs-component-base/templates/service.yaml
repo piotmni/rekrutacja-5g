@@ -1,0 +1,30 @@
+{{- $namespace := .Values.namespace  }}
+{{- $services  := .Values.services }}
+
+
+{{- range .Values.ports }}
+---
+{{- $service := index $services .name }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "open5gs-component-base.name" $ }}-{{ .name }}
+  namespace: {{ $namespace | quote }}
+  labels:
+    {{- include "open5gs-component-base.labels" $ | nindent 4 }}
+spec:
+  type: {{ $service.type }}
+  {{- if and $service.clusterIP (eq $service.type "ClusterIP") }}
+  clusterIP: {{ $service.clusterIP }}
+  {{- end }}
+  ports:
+    - name: {{ .name }}
+      port: {{ .containerPort }}
+      targetPort: {{ .containerPort }}
+      {{- if .protocol }}
+      protocol: {{ .protocol }}
+      {{- end }}
+  selector:
+    {{- include "open5gs-component-base.selectorLabels" $ | nindent 8 }}
+
+{{- end }}

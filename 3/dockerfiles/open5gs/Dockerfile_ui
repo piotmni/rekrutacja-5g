@@ -1,0 +1,15 @@
+FROM node:19
+
+RUN apt-get update && \
+    apt-get install -y curl git && \
+    git clone -b v2.5.3 https://github.com/open5gs/open5gs /open5gs
+
+RUN cd /open5gs/webui && \
+    npm ci &&  \
+    npm run build
+
+WORKDIR /open5gs/webui
+
+CMD ["npm", "run", "start"]
+EXPOSE 3000
+
